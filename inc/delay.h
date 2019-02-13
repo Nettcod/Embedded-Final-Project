@@ -19,9 +19,9 @@
 #define CLKSOURCE 02
 #define COUNTFLAG 16
 //Clock ticks for certain times
-#define TICKS_S  2000000
-#define TICKS_MS 2000
-#define TICKS_US 2
+#define SYS_TICKS_S  2000000
+#define SYS_TICKS_MS 2000
+#define SYS_TICKS_US 2
 
 /**
  * Delay for n seconds

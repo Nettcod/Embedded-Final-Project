@@ -9,7 +9,7 @@ void delay_s(uint32_t n) {
     //Repeat n times
     for (int i = 0; i <= n; i++) {
         //Set clock ticks to count for
-        *STK_LOAD = TICKS_S;
+        *STK_LOAD = SYS_TICKS_S;
         //Enable timer
         *STK_CTRL &= 0xFFFF ^ (1 << CLKSOURCE);
         *STK_CTRL |= 1 << EN;
@@ -22,7 +22,7 @@ void delay_ms(uint32_t n) {
     //Repeat n times
     for (int i = 0; i <= n; i++) {
         //Set clock ticks to count for
-        *STK_LOAD = TICKS_MS;
+        *STK_LOAD = SYS_TICKS_MS;
         //Enable timer
         *STK_CTRL &= 0xFFFF ^ (1 << CLKSOURCE);
         *STK_CTRL |= 1 << EN;
@@ -35,7 +35,7 @@ void delay_us(uint32_t n) {
     //Repeat n times
     for (int i = 0; i <= n; i++) {
         //Set clock ticks to count for
-        *STK_LOAD = TICKS_US;
+        *STK_LOAD = SYS_TICKS_US;
         //Enable timer
         *STK_CTRL &= 0xFFFF ^ (1 << CLKSOURCE);
         *STK_CTRL |= 1 << EN;
