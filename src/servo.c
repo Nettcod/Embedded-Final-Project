@@ -8,10 +8,16 @@
 
 void servo_init(servo *motor) {
     //Set pin to alternate function mode
-    motor->gpio->MODER &= ~(0b0011 << 2 * motor->pin);
-    motor->gpio->MODER |=  (0b0010 << 2 * motor->pin);
-    motor->gpio->AFRL  &= ~(0b1111 << 4 * motor->pin);
-    motor->gpio->AFRL  |=  (0b0010 << 4 * motor->pin);
+    motor->gpio->MODER &= ~(0b11   << 2 * motor->pin);
+    motor->gpio->MODER |=  (0b10   << 2 * motor->pin);
+    //First 8 pins use low AFR, second 8 use high AFR
+    if (motor->pin <= 7) {
+        motor->gpio->AFRL  &= ~(0b1111 << 4 * motor->pin);
+        motor->gpio->AFRL  |=  (0b0010 << 4 * motor->pin);
+    } else {
+        motor->gpio->AFRH  &= ~(0b1111 << 4 * (motor->pin - 8));
+        motor->gpio->AFRH  |=  (0b0010 << 4 * (motor->pin - 8));
+    }
     //Set timer to PWM mode 1
     switch(motor->channel) {
     case 1:
@@ -37,6 +43,8 @@ void servo_init(servo *motor) {
     }
     //Enable output compare
     motor->timer->CCER |= 1 << 4 * (motor->channel - 1);
+    //Enable update generation
+    motor->timer->EGR  |= 1;
     //Load wave period into ARR
     motor->timer->ARR  = SERVO_PERIOD_MS * TICKS_MS;
     //Enable counter
