@@ -3,34 +3,76 @@
  * description: These routines use PWM to control servo motors with the STM32f4.
  * author: Cody Nettesheim
  */
+#include <peripherals.h>
 #include "servo.h"
-#include <gpio.h>
 
-void servo_init() {
-    //Enable clock for GPIOA and TIM3
-    *RCC_AHB1ENR |= 0b01;
-    *RCC_APB1ENR |= 0b10;
-    //Set PB3 to alternate function mode
-    *GPIOA_MODER &= ~(0b0011 << 14);
-    *GPIOA_MODER |=  (0b0010 << 14);
-    *GPIOA_AFRL  &= ~(0b1111 << 28);
-    *GPIOA_AFRL  |=  (0b0010 << 28);
-    //Set TIM3 to PWM mode 1
-    *TIM3_CCMR1  &= ~(0b111 << 12);
-    *TIM3_CCMR1  |=  (0b110 << 12);
+void servo_init(servo *motor) {
+    //Set pin to alternate function mode
+    motor->gpio->MODER &= ~(0b0011 << 2 * motor->pin);
+    motor->gpio->MODER |=  (0b0010 << 2 * motor->pin);
+    motor->gpio->AFRL  &= ~(0b1111 << 4 * motor->pin);
+    motor->gpio->AFRL  |=  (0b0010 << 4 * motor->pin);
+    //Set timer to PWM mode 1
+    switch(motor->channel) {
+    case 1:
+        //Channel 1: set bits 4 to 6 on CCMR1
+        motor->timer->CCMR1  &= ~(0b111 << 4);
+        motor->timer->CCMR1  |=  (0b110 << 4);
+        break;
+    case 2:
+        //Channel 2: set bits 12 to 14 on CCMR1
+        motor->timer->CCMR1  &= ~(0b111 << 12);
+        motor->timer->CCMR1  |=  (0b110 << 12);
+        break;
+    case 3:
+        //Channel 3: set bits 4 to 6 on CCMR2
+        motor->timer->CCMR2  &= ~(0b111 << 4);
+        motor->timer->CCMR2  |=  (0b110 << 4);
+        break;
+    case 4:
+        //Channel 4: set bits 12 to 14 on CCMR2
+        motor->timer->CCMR2  &= ~(0b111 << 12);
+        motor->timer->CCMR2  |=  (0b110 << 12);
+        break;
+    }
     //Enable output compare
-    *TIM3_CCER   |= 1 << 4;
-    //Enable timer update generation
-    *TIM3_EGR    |= 1;
+    motor->timer->CCER |= 1 << 4 * (motor->channel - 1);
     //Load wave period into ARR
-    *TIM3_ARR    = 20 * TICKS_MS;
+    motor->timer->ARR  = SERVO_PERIOD_MS * TICKS_MS;
+    //Enable counter
+    motor->timer->CR1  |= 1;
 }
 
-void servo_set_pos(unsigned int us) {
-    //Disable counter
-    *TIM3_CR1    &= ~1;
-    //Load pulse duration into CCR2
-    *TIM3_CCR2   = us * TICKS_US;
-    //Enable counter
-    *TIM3_CR1    |= 1;
+void servo_set_us(servo *motor, unsigned int us) {
+    //Load pulse duration into CCRx
+    switch (motor->channel) {
+    case 1:
+        //Channel 1: CCR1
+        motor->timer->CCR1 = us * TICKS_US;
+        break;
+    case 2:
+        //Channel 2: CCR2
+        motor->timer->CCR2 = us * TICKS_US;
+        break;
+    case 3:
+        //Channel 3: CCR3
+        motor->timer->CCR3 = us * TICKS_US;
+        break;
+    case 4:
+        //Channel 4: CCR4
+        motor->timer->CCR4 = us * TICKS_US;
+        break;
+    }
+}
+
+
+void servo_set_deg(servo *motor, unsigned int deg) {
+    //Keep angle within bounds
+    if (deg > 180) {
+        deg = 180;
+    }
+    //Convert degrees to microseconds
+    unsigned int us = deg * 1000 / 180 + 1000;
+    //Set position
+    servo_set_us(motor, us);
 }

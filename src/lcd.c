@@ -5,7 +5,7 @@
  */
 #include <stdlib.h>
 #include <math.h>
-#include <gpio.h>
+#include "peripherals.h"
 #include "delay.h"
 #include "lcd.h"
 

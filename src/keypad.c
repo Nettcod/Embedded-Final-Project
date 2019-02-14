@@ -3,8 +3,8 @@
  * description: These routines handle input from a keypad
  * author: Cody Nettesheim
  */
+#include "peripherals.h"
 #include "keypad.h"
-#include "gpio.h"
 
 //Initialize GPIO
 static volatile GPIO* GPIOC = (GPIO*) 0x40020800;

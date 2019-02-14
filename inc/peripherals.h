@@ -41,6 +41,8 @@ typedef struct {
     uint32_t CNT;
     uint32_t PSC;
     uint32_t ARR;
+    //This register doesn't exist; it's just here to create an offset between the ARR and CCR1
+    uint32_t NULLREG;
     uint32_t CCR1;
     uint32_t CCR2;
     uint32_t CCR3;
