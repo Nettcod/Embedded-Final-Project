@@ -9,9 +9,9 @@
 #include "peripherals.h"
 
 //Clock ticks per second and microsecond
-#define TICKS_S  180000000
-#define TICKS_MS 180000
-#define TICKS_US 180
+#define TICKS_S  16000000
+#define TICKS_MS 16000
+#define TICKS_US 16
 //Servo expects a pulse every 20ms
 #define SERVO_PERIOD_MS 20
 
