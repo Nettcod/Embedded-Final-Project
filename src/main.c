@@ -57,8 +57,8 @@ void main(void) {
     delay_s(2);
     lcd_clear();
     lcd_print_string("Servo 1");
-    lcd_set_position(1, 0);
-    lcd_print_num(position[0]);
+    lcd_set_position(1,0);
+    lcd_print_string("1500 us");
     while (1) {
             //Get user input
             input = key_getchar();
@@ -68,16 +68,24 @@ void main(void) {
                 lcd_clear();
                 lcd_print_string("Servo ");
                 lcd_print_num(current_servo + 1);
+                lcd_set_position(1,0);
+                lcd_print_string("     us");
+                lcd_set_position(1,0);
+                lcd_print_num(position[current_servo]);
             //Increase pulse width if user pressed 'A' and servo is not already at max pulse width
             } else if (input == 'A' && position[current_servo] < PULSE_MAX) {
                 position[current_servo] += PULSE_INCREMENT;
                 servo_set_us(&arm[current_servo], position[current_servo]);
                 lcd_set_position(1,0);
+                lcd_print_string("     us");
+                lcd_set_position(1,0);
                 lcd_print_num(position[current_servo]);
-                //Derease pulse width if user pressed 'B' and servo is not already at min pulse width
+            //Decrease pulse width if user pressed 'B' and servo is not already at min pulse width
             } else if (input == 'B' && position[current_servo] > PULSE_MIN) {
                 position[current_servo] -= PULSE_INCREMENT;
                 servo_set_us(&arm[current_servo], position[current_servo]);
+                lcd_set_position(1,0);
+                lcd_print_string("     us");
                 lcd_set_position(1,0);
                 lcd_print_num(position[current_servo]);
             }

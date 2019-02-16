@@ -7,7 +7,7 @@
 #define LINKED_LIST_H_
 
 //Node that holds data and a pointer to the next node in the list
-typedef struct {
+typedef struct node{
     int data[5];
     struct node *next;
 } node;
